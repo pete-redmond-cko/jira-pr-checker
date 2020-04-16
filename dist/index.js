@@ -2041,8 +2041,10 @@ function run() {
             }
             const pull_request_number = context.payload.pull_request.number;
             const title = (_b = (_a = context.payload) === null || _a === void 0 ? void 0 : _a.pull_request) === null || _b === void 0 ? void 0 : _b.title;
-            const body = `PR title is: ${title}`;
-            yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: pull_request_number, body }));
+            if (!/^((?<!([A-Z])-?)[A-Z]+-\d+)/.test(title)) {
+                const body = `PR title must start with a valid JIRA ticket ie COVID-19`;
+                yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: pull_request_number, body }));
+            }
         }
         catch (error) {
             core.setFailed(error.message);
