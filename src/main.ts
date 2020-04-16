@@ -16,13 +16,15 @@ async function run(): Promise<void> {
     const pull_request_number = context.payload.pull_request.number;
     const title = context.payload?.pull_request?.title;
 
-    const body = `PR title is: ${title}`;
+    if (!/^((?<!([A-Z])-?)[A-Z]+-\d+)/.test(title)) {
+      const body = `PR title must start with a valid JIRA ticket ie COVID-19`;
 
-    await octokit.issues.createComment({
-      ...context.repo,
-      issue_number: pull_request_number,
-      body
-    });
+      await octokit.issues.createComment({
+        ...context.repo,
+        issue_number: pull_request_number,
+        body
+      });
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
