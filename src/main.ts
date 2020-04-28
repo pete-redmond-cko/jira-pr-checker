@@ -37,8 +37,8 @@ async function run(): Promise<void> {
       const title = pullRequest.title;
       const body = pullRequest.body;
 
-      core.warning(`title -> ${title}`);
-      core.warning(`body -> ${body}`);
+      core.debug(`title -> ${title}`);
+      core.debug(`body -> ${body}`);
 
       if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
         core.setFailed('PR must include a valid JIRA ticket (COVID-19)');
