@@ -2028,7 +2028,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
-const ignoreBranchTerms = ['dependabot'];
+const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
 const ignoreBranch = (branch, ignoreBranchTerms) => {
     for (let i = 0; i < ignoreBranchTerms.length; i++) {
         const branchTerm = ignoreBranchTerms[i];
@@ -2051,12 +2051,13 @@ function run() {
                 return;
             }
             const pull_request_number = pullRequest.number;
-            const title = pullRequest.title;
             const branch = context.ref;
-            if (!/^((?<!([A-Z])-?)[A-Z]+-\d+)/.test(title) &&
-                !ignoreBranch(branch, ignoreBranchTerms)) {
-                const body = `PR title must start with a valid JIRA ticket number (COVID-19)`;
-                yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: pull_request_number, body }));
+            if (!ignoreBranch(branch, ignoreBranchTerms)) {
+                const title = pullRequest.title;
+                const body = pullRequest.body;
+                if (!jiraRegex.test(title) && !jiraRegex.test(body)) {
+                    yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: pull_request_number, body: 'PR include a valid JIRA ticket (COVID-19)' }));
+                }
             }
         }
         catch (error) {

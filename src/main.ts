@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-const ignoreBranchTerms = ['dependabot'];
+const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
 
 const ignoreBranch = (branch: string, ignoreBranchTerms: string[]) => {
   for (let i = 0; i < ignoreBranchTerms.length; i++) {
@@ -31,20 +31,19 @@ async function run(): Promise<void> {
     }
 
     const pull_request_number = pullRequest.number;
-    const title = pullRequest.title;
     const branch = context.ref;
 
-    if (
-      !/^((?<!([A-Z])-?)[A-Z]+-\d+)/.test(title) &&
-      !ignoreBranch(branch, ignoreBranchTerms)
-    ) {
-      const body = `PR title must start with a valid JIRA ticket number (COVID-19)`;
+    if (!ignoreBranch(branch, ignoreBranchTerms)) {
+      const title = pullRequest.title;
+      const body = pullRequest.body;
 
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: pull_request_number,
-        body
-      });
+      if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
+        await octokit.issues.createComment({
+          ...context.repo,
+          issue_number: pull_request_number,
+          body: 'PR include a valid JIRA ticket (COVID-19)'
+        });
+      }
     }
   } catch (error) {
     core.setFailed(error.message);
