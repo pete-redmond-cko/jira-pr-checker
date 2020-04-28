@@ -41,11 +41,11 @@ async function run(): Promise<void> {
       core.warning(`body -> ${body}`);
 
       if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
-        core.setFailed('PR include a valid JIRA ticket (COVID-19)');
+        core.setFailed('PR must include a valid JIRA ticket (COVID-19)');
         await octokit.issues.createComment({
           ...context.repo,
           issue_number: pull_request_number,
-          body: 'PR include a valid JIRA ticket (COVID-19)'
+          body: 'PR must include a valid JIRA ticket (COVID-19)'
         });
       }
     }
