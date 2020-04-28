@@ -2055,8 +2055,8 @@ function run() {
             if (!ignoreBranch(branch, ignoreBranchTerms)) {
                 const title = pullRequest.title;
                 const body = pullRequest.body;
-                core.warning(`title -> ${title}`);
-                core.warning(`body -> ${body}`);
+                core.debug(`title -> ${title}`);
+                core.debug(`body -> ${body}`);
                 if (!jiraRegex.test(title) && !jiraRegex.test(body)) {
                     core.setFailed('PR must include a valid JIRA ticket (COVID-19)');
                     yield octokit.issues.createComment(Object.assign(Object.assign({}, context.repo), { issue_number: pull_request_number, body: 'PR must include a valid JIRA ticket (COVID-19)' }));
