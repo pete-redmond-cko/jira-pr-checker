@@ -33,6 +33,9 @@ async function run(): Promise<void> {
     const pull_request_number = pullRequest.number;
     const branch = context.ref;
 
+    core.debug(`branch -> ${branch}`);
+    core.debug(`ignoreBranchTerms -> ${ignoreBranchTerms}`);
+
     if (!ignoreBranch(branch, ignoreBranchTerms)) {
       const title = pullRequest.title;
       const body = pullRequest.body;
