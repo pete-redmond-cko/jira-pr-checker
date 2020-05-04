@@ -2051,10 +2051,11 @@ function run() {
                 return;
             }
             const pull_request_number = pullRequest.number;
-            const branch = context.ref;
-            core.debug(`branch -> ${branch}`);
-            core.debug(`ignoreBranchTerms -> ${ignoreBranchTerms}`);
-            if (!ignoreBranch(branch, ignoreBranchTerms)) {
+            const branch = context.ref.replace('refs/heads/', '');
+            if (ignoreBranch(branch, ignoreBranchTerms)) {
+                core.debug(`branch is in the whitelist -> ${branch} ${ignoreBranchTerms}`);
+            }
+            else {
                 const title = pullRequest.title;
                 const body = pullRequest.body;
                 core.debug(`title -> ${title}`);
