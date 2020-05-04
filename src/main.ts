@@ -31,7 +31,7 @@ async function run(): Promise<void> {
     }
 
     const pull_request_number = pullRequest.number;
-    const branch = context.ref.replace('refs/heads/', '');
+    const branch = pullRequest.head.ref.replace('refs/heads/', '');
 
     core.debug(`branch -> ${branch}`);
     core.debug(`ignoreBranchTerms -> ${ignoreBranchTerms}`);
