@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
+const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)\s.+/gm;
 
 const ignoreBranch = (branch: string, ignoreBranchTerms: string[]) => {
   for (let i = 0; i < ignoreBranchTerms.length; i++) {
@@ -14,6 +14,12 @@ const ignoreBranch = (branch: string, ignoreBranchTerms: string[]) => {
 
   return false;
 };
+
+const errorMessage = `Please make sure that the PR title follows the standard PRISM-XXXX - My PR Title
+
+* All letters of PRISM must be in uppercase
+* At least one blank space must be left after the number
+* All PRs must have an according JIRA ticket (at the exception of dependabot)`;
 
 async function run(): Promise<void> {
   try {
@@ -42,17 +48,21 @@ async function run(): Promise<void> {
       );
     } else {
       const title = pullRequest.title;
-      const body = pullRequest.body;
+      
 
       core.debug(`title -> ${title}`);
-      core.debug(`body -> ${body}`);
+      
 
-      if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
-        core.setFailed('PR must include a valid JIRA ticket (COVID-19)');
+      if (!jiraRegex.test(title)) {
+
+
+        core.setFailed(errorMessage);
+
+
         await octokit.issues.createComment({
           ...context.repo,
           issue_number: pull_request_number,
-          body: 'PR must include a valid JIRA ticket (COVID-19)'
+          body: errorMessage
         });
       }
     }
